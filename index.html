@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A11y AI | Premium Accessibility Analysis</title>
+    <meta name="description" content="AI-powered web accessibility analyser and demo page.">
+    
+    <!-- Tailwind CSS Play CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#c8f04a',
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Playfair+Display:wght@700;900&display=swap');
+        
+        .font-playfair { font-family: 'Playfair Display', serif; }
+        .font-mono { font-family: 'DM Mono', monospace; }
+        
+        .glass {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+        
+        .dark .glass {
+            background: rgba(0, 0, 0, 0.3);
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        .float-animation {
+            animation: float 6s ease-in-out infinite;
+        }
+
+        /* Intentional Accessibility Issues for Demo */
+        .issue-low-contrast { color: #bbb; }
+        .issue-tiny-target { font-size: 8px; padding: 2px 4px; }
+        .status-dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; }
+        .status-dot.green { background: #27ae60; }
+        .status-dot.red { background: #e74c3c; }
+    </style>
+</head>
+
+<body class="bg-[#fafafa] text-gray-900 dark:bg-[#0a0a0a] dark:text-gray-100 min-h-screen flex flex-col items-center p-4 transition-colors duration-500">
+    
+    <!-- Header Actions -->
+    <div class="fixed top-8 left-8 right-8 z-50 flex justify-between items-center pointer-events-none">
+        <div class="flex items-center gap-4 pointer-events-auto group">
+            <div class="w-12 h-12 rounded-2xl glass border border-gray-200 dark:border-white/10 flex items-center justify-center overflow-hidden transition-all duration-500 hover:scale-110 shadow-lg">
+                <img src="MyIcon.png" alt="Logo" class="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity">
+            </div>
+            <span class="text-[10px] font-mono font-bold tracking-[0.3em] text-gray-400 dark:text-zinc-500 hidden sm:block">AB LABS</span>
+        </div>
+        <div class="flex gap-4 pointer-events-auto">
+            <button id="theme-toggle" class="w-12 h-12 rounded-2xl glass border border-gray-200 dark:border-white/10 flex items-center justify-center hover:scale-110 transition-transform">
+                <span id="theme-toggle-icon" class="text-xl">🌙</span>
+            </button>
+        </div>
+    </div>
+
+    <div class="w-full max-w-4xl mt-12 md:mt-32">
+        <header class="mb-20 text-center">
+            <h1 class="text-4xl md:text-6xl font-playfair font-black tracking-tight mb-6">
+                A11y <span class="text-lime-400">Synthesis</span>
+            </h1>
+            <p class="text-sm font-mono text-gray-400 dark:text-zinc-500 uppercase tracking-[0.4em]">Autonomous Accessibility Auditing</p>
+            <div class="mt-8 p-4 glass border border-lime-400/20 rounded-2xl inline-block">
+                <p class="text-xs font-mono text-lime-500 uppercase tracking-widest">Demo Environment: Intentional Faults Detected</p>
+            </div>
+        </header>
+
+        <main class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            
+            <!-- Issue 1: Low Contrast -->
+            <div class="card glass border border-gray-200 dark:border-white/5 rounded-[2.5rem] p-8 space-y-6">
+                <div class="flex justify-between items-start">
+                    <h2 class="text-xl font-playfair font-bold">Project Overview</h2>
+                    <span class="text-[10px] font-mono text-zinc-500 uppercase">Module 01</span>
+                </div>
+                <p class="issue-low-contrast font-mono text-sm leading-relaxed">
+                    This section contains text with insufficient contrast ratio. It simulates a common accessibility barrier where foreground and background colors are too similar for visually impaired users.
+                </p>
+                <div class="pt-4 border-t border-white/5">
+                    <a href="/void" class="text-xs uppercase tracking-widest text-lime-400 hover:underline">Learn More</a>
+                </div>
+            </div>
+
+            <!-- Issue 2: Missing Alt & Structure -->
+            <div class="card glass border border-gray-200 dark:border-white/5 rounded-[2.5rem] p-8 space-y-6">
+                <div class="flex justify-between items-start">
+                    <h2 class="text-xl font-playfair font-bold">Visual Asset</h2>
+                    <span class="text-[10px] font-mono text-zinc-500 uppercase">Module 02</span>
+                </div>
+                <!-- NO ALT ATTRIBUTE HERE -->
+                <img src="https://picsum.photos/seed/a11y/600/300" class="w-full h-40 object-cover rounded-2xl border border-white/10">
+                <h5 class="text-[10px] font-mono text-zinc-500 uppercase tracking-widest">Broken Hierarchy (H2 to H5)</h5>
+            </div>
+
+            <!-- Issue 4: Color-only Info -->
+            <div class="card glass border border-gray-200 dark:border-white/5 rounded-[2.5rem] p-8 space-y-6">
+                <div class="flex justify-between items-start">
+                    <h2 class="text-xl font-playfair font-bold">System Nodes</h2>
+                    <span class="text-[10px] font-mono text-zinc-500 uppercase">Module 03</span>
+                </div>
+                <div class="space-y-4">
+                    <div class="flex items-center gap-3">
+                        <span class="status-dot green"></span>
+                        <span class="text-sm font-mono uppercase tracking-wider">Storage Cluster</span>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <span class="status-dot red"></span>
+                        <span class="text-sm font-mono uppercase tracking-wider">Auth Gateway</span>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <span class="status-dot green"></span>
+                        <span class="text-sm font-mono uppercase tracking-wider">Neural Engine</span>
+                    </div>
+                </div>
+                <p class="text-[10px] text-zinc-500 font-mono italic mt-4">Status indicated via chromatic variance only.</p>
+            </div>
+
+            <!-- Issue 5: Form without labels -->
+            <div class="card glass border border-gray-200 dark:border-white/5 rounded-[2.5rem] p-8 space-y-6">
+                <div class="flex justify-between items-start">
+                    <h2 class="text-xl font-playfair font-bold">Direct Access</h2>
+                    <span class="text-[10px] font-mono text-zinc-500 uppercase">Module 04</span>
+                </div>
+                <form class="space-y-4" onsubmit="return false">
+                    <input type="text" placeholder="Identity String" class="w-full p-4 rounded-xl bg-white/5 border border-white/10 outline-none focus:border-lime-400/50 text-sm font-mono">
+                    <input type="email" placeholder="Network Address" class="w-full p-4 rounded-xl bg-white/5 border border-white/10 outline-none focus:border-lime-400/50 text-sm font-mono">
+                    <div class="flex justify-start">
+                        <button class="issue-tiny-target bg-lime-400 text-black font-bold uppercase tracking-tighter rounded-md shadow-lg shadow-lime-400/20">Submit</button>
+                    </div>
+                </form>
+            </div>
+
+        </main>
+
+        <footer class="mt-32 pb-12 text-center border-t border-white/5 pt-12">
+            <div class="flex flex-col items-center gap-4">
+                <div class="w-10 h-10 rounded-xl glass border border-white/10 flex items-center justify-center overflow-hidden">
+                    <img src="MyIcon.png" alt="Logo" class="w-6 h-6 opacity-40">
+                </div>
+                <p class="text-[9px] font-mono text-zinc-600 uppercase tracking-[0.5em]">&copy; 2026 AB LABS. All rights reserved.</p>
+            </div>
+        </footer>
+    </div>
+
+    <!-- 
+      Modernized widget integration pointing to the new location.
+      The widget will automatically display the fixed button.
+    -->
+    <script
+      src="assets/js/widget.js"
+      data-api="/api/analyze"
+      data-key="Kx9#mP2vN$qL8@wR5yT!"
+    ></script>
+
+    <script shadow>
+        // Simple theme toggle for the demo page
+        const themeToggle = document.getElementById('theme-toggle');
+        const themeIcon = document.getElementById('theme-toggle-icon');
+        
+        function updateThemeIcon() {
+            const isDark = document.documentElement.classList.contains('dark');
+            themeIcon.textContent = isDark ? '☀️' : '🌙';
+        }
+
+        themeToggle.addEventListener('click', () => {
+            document.documentElement.classList.toggle('dark');
+            localStorage.setItem('theme', document.documentElement.classList.contains('dark') ? 'dark' : 'light');
+            updateThemeIcon();
+        });
+
+        // Init theme
+        if (localStorage.getItem('theme') === 'dark' || (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        }
+        updateThemeIcon();
+    </script>
+</body>
+
+</html>

@@ -13,9 +13,10 @@ a11y-api/
 ├── api/
 │   ├── analyze.js       ← POST /api/analyze  (main endpoint)
 │   └── health.js        ← GET  /api/health   (status check)
-├── public/
-│   ├── index.html       ← Demo page with intentional a11y issues
-│   └── a11y-widget.js   ← Drop-in client script for any website
+├── assets/
+│   └── js/
+│       └── widget.js    ← Drop-in client script for any website
+├── index.html           ← Demo page with intentional a11y issues
 ├── .env.example
 ├── .gitignore
 ├── package.json
