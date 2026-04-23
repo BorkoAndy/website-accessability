@@ -1,18 +1,10 @@
-# This file is used as the global entrypoint for Vercel's Python builder
-from http.server import BaseHTTPRequestHandler
-import json
+from flask import Flask, jsonify
 
-class handler(BaseHTTPRequestHandler):
-    def do_GET(self):
-        self.send_response(200)
-        self.send_header('Content-type', 'application/json')
-        self.end_headers()
-        self.wfile.write(json.dumps({
-            'message': 'A11y API entrypoint'
-        }).encode())
+app = Flask(__name__)
 
-# Vercel's newest builder sometimes requires an 'app' WSGI/ASGI variable 
-# in the entrypoint file to recognize it as a valid Python project.
-def app(environ, start_response):
-    start_response('200 OK', [('Content-Type', 'application/json')])
-    return [b'{"message": "A11y API root"}']
+@app.route('/')
+def index():
+    return jsonify({"status": "ok", "message": "A11y AI API Root"})
+
+if __name__ == '__main__':
+    app.run(debug=True)
