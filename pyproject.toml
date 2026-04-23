@@ -1,0 +1,12 @@
+[project]
+name = "a11y-ai-api"
+version = "1.0.0"
+description = "AI-powered accessibility analysis API using Groq"
+readme = "README.md"
+requires-python = ">=3.9"
+dependencies = [
+    "requests"
+]
+
+[tool.uv]
+managed = true
