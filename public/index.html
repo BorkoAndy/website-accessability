@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>A11y AI — Demo Page</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: #f5f5f5; color: #1a1a1a; }
+
+    header { background: #185FA5; color: #fff; padding: 20px 40px; }
+    header h1 { font-size: 22px; font-weight: 600; }
+    header p  { font-size: 13px; opacity: .8; margin-top: 4px; }
+
+    main { max-width: 860px; margin: 40px auto; padding: 0 24px; display: grid; gap: 24px; }
+
+    .card { background: #fff; border-radius: 10px; border: 1px solid #e0e0e0; padding: 24px; }
+    .card h2 { font-size: 16px; font-weight: 600; margin-bottom: 14px; color: #111; }
+
+    /* ── Intentional accessibility issues for demo ── */
+
+    /* Issue 1: low contrast text */
+    .low-contrast { color: #bbb; font-size: 14px; line-height: 1.6; }
+
+    /* Issue 2: missing alt on img (see HTML below) */
+
+    /* Issue 3: tiny touch target */
+    .tiny-btn { font-size: 10px; padding: 2px 4px; }
+
+    /* Issue 4: color-only info */
+    .status-dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 6px; }
+    .status-dot.green { background: #27ae60; }
+    .status-dot.red   { background: #e74c3c; }
+
+    /* Issue 5: form without labels */
+    .unlabelled-form input, .unlabelled-form textarea {
+      display: block; width: 100%; margin-bottom: 10px;
+      border: 1px solid #ccc; border-radius: 6px; padding: 8px 10px; font-size: 14px;
+    }
+    .unlabelled-form button {
+      background: #185FA5; color: #fff; border: none; padding: 9px 20px;
+      border-radius: 6px; font-size: 14px; cursor: pointer;
+    }
+
+    /* General */
+    .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    table  { width: 100%; border-collapse: collapse; font-size: 14px; }
+    th, td { text-align: left; padding: 9px 12px; border-bottom: 1px solid #eee; }
+    th     { font-weight: 600; background: #f8f8f8; }
+    a      { color: #185FA5; }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>A11y AI — Demo Page</h1>
+  <p>This page contains intentional accessibility issues. Click the ♿ button to analyse.</p>
+</header>
+
+<main>
+
+  <!-- Issue 1: Low contrast -->
+  <div class="card">
+    <h2>About our service</h2>
+    <p class="low-contrast">
+      We provide enterprise-grade cloud solutions tailored for modern businesses.
+      Our platform scales seamlessly from startup to Fortune 500, with 99.9% uptime guaranteed.
+      Get started today and transform the way your team collaborates.
+    </p>
+    <!-- Issue: empty link -->
+    <p style="margin-top:12px"><a href="/learn-more"></a></p>
+  </div>
+
+  <div class="grid2">
+
+    <!-- Issue 2: Image without alt -->
+    <div class="card">
+      <h2>Our team</h2>
+      <img src="https://picsum.photos/seed/team/300/160" style="width:100%;border-radius:6px;margin-bottom:10px">
+      <p style="font-size:13px;color:#555">A diverse group of engineers, designers, and strategists.</p>
+    </div>
+
+    <!-- Issue 3: Heading hierarchy skip (h2 → h5) -->
+    <div class="card">
+      <h2>Key metrics</h2>
+      <h5 style="color:#888;font-size:12px;margin-bottom:8px">PERFORMANCE</h5>
+      <table>
+        <tr><th>Metric</th><th>Value</th></tr>
+        <tr><td>Uptime</td><td>99.9%</td></tr>
+        <tr><td>Avg response</td><td>120ms</td></tr>
+        <tr><td>Active users</td><td>48 200</td></tr>
+      </table>
+    </div>
+
+  </div>
+
+  <!-- Issue 4: Color-only status info -->
+  <div class="card">
+    <h2>System status</h2>
+    <p style="font-size:13px;color:#555;margin-bottom:12px">
+      Status is indicated by color only — not accessible for color-blind users.
+    </p>
+    <ul style="list-style:none;display:grid;gap:8px">
+      <li><span class="status-dot green"></span>API Gateway</li>
+      <li><span class="status-dot green"></span>Database cluster</li>
+      <li><span class="status-dot red"></span>Email service</li>
+      <li><span class="status-dot green"></span>CDN</li>
+    </ul>
+  </div>
+
+  <!-- Issue 5: Form without labels -->
+  <div class="card">
+    <h2>Contact us</h2>
+    <form class="unlabelled-form" onsubmit="return false">
+      <input type="text"  placeholder="Your name">
+      <input type="email" placeholder="Email address">
+      <textarea rows="4"  placeholder="Message"></textarea>
+      <!-- Issue 6: tiny touch target button -->
+      <button class="tiny-btn" type="submit">Send</button>
+    </form>
+  </div>
+
+  <!-- Issue 7: autoplay video (muted but still) -->
+  <div class="card">
+    <h2>Product tour</h2>
+    <video
+      src="https://www.w3schools.com/html/mov_bbb.mp4"
+      autoplay muted loop
+      style="width:100%;border-radius:6px;max-height:180px;object-fit:cover"
+    ></video>
+    <p style="font-size:12px;color:#aaa;margin-top:6px">No captions provided.</p>
+  </div>
+
+</main>
+
+<!--
+  ── Widget integration ──────────────────────────────────────────────────────
+  Replace data-api and data-key with your deployed Vercel URL and password.
+  Or call A11yWidget.init({ api: '...', key: '...' }) manually.
+-->
+<script
+  src="/a11y-widget.js"
+  data-api="https://YOUR_APP.vercel.app/api/analyze"
+  data-key="YOUR_API_PASSWORD"
+></script>
+
+</body>
+</html>

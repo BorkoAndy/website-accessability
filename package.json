@@ -1,0 +1,9 @@
+{
+  "name": "a11y-ai-api",
+  "version": "1.0.0",
+  "description": "AI-powered accessibility analysis API using Groq",
+  "private": true,
+  "engines": {
+    "node": ">=18"
+  }
+}
