@@ -1,3 +1,4 @@
+# This file is used as the global entrypoint for Vercel's Python builder
 from http.server import BaseHTTPRequestHandler
 import json
 
@@ -7,10 +8,11 @@ class handler(BaseHTTPRequestHandler):
         self.send_header('Content-type', 'application/json')
         self.end_headers()
         self.wfile.write(json.dumps({
-            'message': 'A11y AI API is running. Available endpoints: /api/analyze, /api/health'
+            'message': 'A11y API entrypoint'
         }).encode())
 
-# Provide a standard WSGI app variable to satisfy the Vercel detector
+# Vercel's newest builder sometimes requires an 'app' WSGI/ASGI variable 
+# in the entrypoint file to recognize it as a valid Python project.
 def app(environ, start_response):
     start_response('200 OK', [('Content-Type', 'application/json')])
-    return [b'{"message": "A11y AI API is running"}']
+    return [b'{"message": "A11y API root"}']
