@@ -2,7 +2,11 @@
   "version": 2,
   "routes": [
     {
-      "src": "/api/(.*)",
+      "src": "/api/health",
+      "dest": "/api/main.py"
+    },
+    {
+      "src": "/api/analyze",
       "dest": "/api/main.py"
     },
     {
@@ -14,7 +18,7 @@
       "dest": "/MyIcon.png"
     },
     {
-      "src": "/(.*)",
+      "src": "/",
       "dest": "/index.html"
     }
   ]
