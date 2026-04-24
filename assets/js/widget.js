@@ -45,7 +45,10 @@
       font-size: 14px; color: #1a1a1a;
       display: none; flex-direction: column; overflow: hidden;
     }
-    #a11y-container:hover #a11y-panel, #a11y-container:focus-within #a11y-panel { display: flex; }
+    html.a11y-on #a11y-container:hover #a11y-panel, 
+    html.a11y-on #a11y-container:focus-within #a11y-panel { 
+      display: flex; 
+    }
 
     #a11y-panel-header {
       padding: 12px 16px; border-bottom: 1px solid #eee; background: #fafafa;
@@ -97,7 +100,10 @@
     
     // Toggle Master Class
     html.classList.toggle('a11y-on', settings.masterActive);
-    if (fab) fab.classList.toggle('active-mode', settings.masterActive);
+    if (fab) {
+      fab.classList.toggle('active-mode', settings.masterActive);
+      fab.title = settings.masterActive ? 'Click to Deactivate / Hover for Settings' : 'Click to Activate Accessibility';
+    }
 
     if (settings.masterActive) {
       ['grayscale', 'invert', 'high-contrast', 'links-visible', 'focus-visible', 'missing-alt'].forEach(t => {
