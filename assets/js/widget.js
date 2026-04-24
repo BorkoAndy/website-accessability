@@ -134,7 +134,7 @@
       <div id="a11y-panel">
         <div id="a11y-panel-header">
           <h3>Tool Preferences</h3>
-          <div style="font-size:10px; color:#27ae60; font-weight:700">● Master Mode</div>
+          <div style="font-size:10px; color:#27ae60; font-weight:700">● Accessibility Active</div>
         </div>
         <div id="a11y-section-enhance">
           <div class="a11y-enhance-group">
