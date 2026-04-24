@@ -38,7 +38,7 @@
 
     #a11y-panel {
       position: fixed; bottom: 84px; right: 24px; z-index: 2147483645;
-      width: 340px; max-height: 70vh;
+      width: 360px; max-height: 75vh;
       background: #fff; border: 1px solid #ddd; border-radius: 12px;
       box-shadow: 0 4px 20px rgba(0,0,0,.15);
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
@@ -57,6 +57,38 @@
       background: none; border: none; font-size: 18px; cursor: pointer;
       color: #666; padding: 0 4px; line-height: 1;
     }
+
+    #a11y-tabs {
+      display: flex; border-bottom: 1px solid #eee; background: #fafafa;
+    }
+    .a11y-tab {
+      flex: 1; padding: 10px; border: none; background: none; cursor: pointer;
+      font-size: 13px; font-weight: 500; color: #666; border-bottom: 2px solid transparent;
+      transition: all .2s;
+    }
+    .a11y-tab.active { color: #185FA5; border-bottom-color: #185FA5; background: #fff; }
+
+    .a11y-section { display: none; flex-direction: column; flex: 1; overflow-y: auto; }
+    .a11y-section.active { display: flex; }
+
+    /* Enhance Tab Styles */
+    .a11y-enhance-group { padding: 16px; border-bottom: 1px solid #eee; }
+    .a11y-enhance-group:last-child { border-bottom: none; }
+    .a11y-enhance-title { font-size: 11px; font-weight: 700; color: #888; text-transform: uppercase; margin-bottom: 12px; }
+    
+    .a11y-tool-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .a11y-tool-btn {
+      padding: 8px; border: 1px solid #ddd; border-radius: 6px; background: #fff;
+      font-size: 12px; cursor: pointer; text-align: center; transition: all .15s;
+    }
+    .a11y-tool-btn:hover { border-color: #185FA5; color: #185FA5; }
+    .a11y-tool-btn.active { background: #185FA5; color: #fff; border-color: #185FA5; }
+
+    .a11y-range-group { display: flex; align-items: center; gap: 10px; margin-top: 8px; }
+    .a11y-range-label { flex: 1; font-size: 13px; }
+    .a11y-range-value { width: 40px; text-align: right; font-weight: 600; color: #185FA5; }
+
+    /* Audit Tab Styles */
     #a11y-summary {
       padding: 10px 16px; font-size: 12px; color: #555;
       border-bottom: 1px solid #eee; flex-shrink: 0;
@@ -102,9 +134,35 @@
     .a11y-fix-btn.applied::before { content: '✓ '; }
     .a11y-highlight { outline: 3px solid #E24B4A !important; outline-offset: 2px !important; }
 
-    #a11y-status {
-      padding: 12px 16px; text-align: center; color: #555; font-size: 13px;
+    #a11y-score-badge {
+      font-size: 11px; font-weight: 700; background: #eee; color: #666;
+      padding: 2px 8px; border-radius: 10px; margin-left: 8px;
     }
+    #a11y-score-badge.good { background: #e8f5e9; color: #2e7d32; }
+    #a11y-score-badge.fair { background: #fff3e0; color: #ef6c00; }
+    #a11y-score-badge.poor { background: #ffebee; color: #c62828; }
+
+    .a11y-wcag { font-size: 10px; color: #888; font-family: monospace; margin-left: 6px; }
+    .a11y-impact { font-size: 9px; font-weight: 700; text-transform: uppercase; padding: 1px 4px; border-radius: 3px; margin-left: 6px; }
+    .a11y-impact.high { background: #ff5252; color: #fff; }
+    .a11y-impact.medium { background: #fb8c00; color: #fff; }
+    .a11y-impact.low { background: #9e9e9e; color: #fff; }
+
+    .a11y-filters { padding: 8px 16px; display: flex; gap: 6px; border-bottom: 1px solid #eee; overflow-x: auto; }
+    .a11y-filter-chip {
+      font-size: 10px; padding: 3px 8px; border-radius: 12px; border: 1px solid #ddd;
+      background: #fff; cursor: pointer; white-space: nowrap;
+    }
+    .a11y-filter-chip.active { background: #185FA5; color: #fff; border-color: #185FA5; }
+
+    /* Global Enhancement Classes */
+    html.a11y-grayscale { filter: grayscale(100%) !important; }
+    html.a11y-invert { filter: invert(100%) !important; }
+    html.a11y-high-contrast { background: #000 !important; color: #ffff00 !important; }
+    html.a11y-high-contrast * { background-color: #000 !important; color: #ffff00 !important; border-color: #ffff00 !important; }
+    html.a11y-links-visible a { text-decoration: underline !important; outline: 3px solid #ffff00 !important; outline-offset: 2px !important; background: #000 !important; color: #fff !important; }
+    html.a11y-focus-visible *:focus { outline: 4px solid #185FA5 !important; outline-offset: 2px !important; }
+    html.a11y-missing-alt img:not([alt]), html.a11y-missing-alt img[alt=""] { outline: 5px solid #ff0000 !important; }
   `;
 
   // ── DOM helpers ───────────────────────────────────────────────────────────
@@ -131,28 +189,114 @@
     panel.setAttribute('aria-label', 'Accessibility analysis results');
     panel.innerHTML = `
       <div id="a11y-panel-header">
-        <h3>♿ Accessibility AI</h3>
+        <h3 style="display:flex;align-items:center">
+          ♿ Accessibility Suite
+          <span id="a11y-score-badge" style="display:none"></span>
+        </h3>
         <button id="a11y-close" aria-label="Close panel">✕</button>
       </div>
-      <div id="a11y-summary"></div>
-      <div id="a11y-actions" style="display:none">
-        <button id="a11y-apply-all">Apply all fixes</button>
-        <button id="a11y-undo-all">Undo all</button>
-        <button id="a11y-rescan">Re-scan</button>
+
+      <div id="a11y-tabs">
+        <button class="a11y-tab active" data-tab="enhance">Enhance</button>
+        <button class="a11y-tab" data-tab="audit">Audit</button>
       </div>
-      <div id="a11y-list">
-        <div id="a11y-status">Click "Analyse" to scan this page.</div>
+
+      <!-- ENHANCE TAB -->
+      <div id="a11y-section-enhance" class="a11y-section active">
+        <!-- ... (previous enhancement tools content) ... -->
+        <div class="a11y-enhance-group">
+          <div class="a11y-enhance-title">Contrast & Color</div>
+          <div class="a11y-tool-grid">
+            <button class="a11y-tool-btn" data-tool="grayscale">Monochrome</button>
+            <button class="a11y-tool-btn" data-tool="invert">Invert</button>
+            <button class="a11y-tool-btn" data-tool="high-contrast">Hi-Contrast</button>
+          </div>
+        </div>
+
+        <div class="a11y-enhance-group">
+          <div class="a11y-enhance-title">Typography</div>
+          <div class="a11y-range-group">
+            <span class="a11y-range-label">Text Size</span>
+            <button class="a11y-tool-btn" style="padding:4px 10px" id="a11y-font-dec">−</button>
+            <span class="a11y-range-value" id="a11y-font-val">100%</span>
+            <button class="a11y-tool-btn" style="padding:4px 10px" id="a11y-font-inc">+</button>
+          </div>
+          <div class="a11y-range-group">
+            <span class="a11y-range-label">Line Spacing</span>
+            <button class="a11y-tool-btn" style="padding:4px 10px" id="a11y-line-dec">−</button>
+            <span class="a11y-range-value" id="a11y-line-val">1.0</span>
+            <button class="a11y-tool-btn" style="padding:4px 10px" id="a11y-line-inc">+</button>
+          </div>
+        </div>
+
+        <div class="a11y-enhance-group">
+          <div class="a11y-enhance-title">Navigation Tools</div>
+          <div class="a11y-tool-grid">
+            <button class="a11y-tool-btn" data-tool="links-visible">Highlight Links</button>
+            <button class="a11y-tool-btn" data-tool="focus-visible">Force Focus</button>
+            <button class="a11y-tool-btn" data-tool="missing-alt">Missing Alt</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- AUDIT TAB -->
+      <div id="a11y-section-audit" class="a11y-section">
+        <div id="a11y-summary"></div>
+        <div id="a11y-filters" style="display:none">
+          <button class="a11y-filter-chip active" data-filter="all">All</button>
+          <button class="a11y-filter-chip" data-filter="critical">Critical</button>
+          <button class="a11y-filter-chip" data-filter="warning">Warning</button>
+          <button class="a11y-filter-chip" data-filter="suggestion">Suggestion</button>
+        </div>
+        <div id="a11y-actions" style="display:none">
+          <button id="a11y-apply-all">Apply all fixes</button>
+          <button id="a11y-undo-all">Undo all</button>
+          <button id="a11y-rescan">Re-scan</button>
+        </div>
+        <div id="a11y-list">
+          <div id="a11y-status">Click "Re-scan" to run AI audit.</div>
+        </div>
       </div>
     `;
 
     document.body.appendChild(fab);
     document.body.appendChild(panel);
 
+    // Tab switcher listeners
+    panel.querySelectorAll('.a11y-tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        panel.querySelectorAll('.a11y-tab, .a11y-section').forEach(el => el.classList.remove('active'));
+        tab.classList.add('active');
+        document.getElementById(`a11y-section-${tab.dataset.tab}`).classList.add('active');
+      });
+    });
+
+    // Tool listeners
+    panel.querySelectorAll('.a11y-tool-btn[data-tool]').forEach(btn => {
+      btn.addEventListener('click', () => toggleEnhancement(btn.dataset.tool, btn));
+    });
+
+    document.getElementById('a11y-font-inc').addEventListener('click', () => adjustFont(10));
+    document.getElementById('a11y-font-dec').addEventListener('click', () => adjustFont(-10));
+    document.getElementById('a11y-line-inc').addEventListener('click', () => adjustLine(0.1));
+    document.getElementById('a11y-line-dec').addEventListener('click', () => adjustLine(-0.1));
+
+    panel.querySelectorAll('.a11y-filter-chip').forEach(chip => {
+      chip.addEventListener('click', () => {
+        panel.querySelectorAll('.a11y-filter-chip').forEach(c => c.classList.remove('active'));
+        chip.classList.add('active');
+        renderIssues(); // Re-render with current filter
+      });
+    });
+
     fab.addEventListener('click', onFabClick);
     document.getElementById('a11y-close').addEventListener('click', closePanel);
     document.getElementById('a11y-apply-all').addEventListener('click', applyAllFixes);
     document.getElementById('a11y-undo-all').addEventListener('click', undoAllFixes);
     document.getElementById('a11y-rescan').addEventListener('click', runAnalysis);
+    
+    // Load persisted settings
+    restoreSettings();
   }
 
   // ── State ─────────────────────────────────────────────────────────────────
@@ -237,10 +381,14 @@
     }
   }
 
+  let globalAuditData = null;
+
   // ── API call ──────────────────────────────────────────────────────────────
   async function runAnalysis() {
     setStatus('Scanning page…');
     document.getElementById('a11y-summary').textContent = '';
+    document.getElementById('a11y-score-badge').style.display = 'none';
+    document.getElementById('a11y-filters').style.display = 'none';
     document.getElementById('a11y-actions').style.display = 'none';
     document.getElementById('a11y-fab').classList.add('loading');
     issues = [];
@@ -265,13 +413,17 @@
       }
 
       const data = await res.json();
+      globalAuditData = data;
       issues = data.issues || [];
       analysed = true;
 
-      renderIssues(data);
+      renderIssues();
+      renderScore(data.score);
+      
       document.getElementById('a11y-summary').textContent =
         `${data.summary}  •  ${data.ms}ms`;
       document.getElementById('a11y-actions').style.display = issues.length ? 'flex' : 'none';
+      document.getElementById('a11y-filters').style.display = issues.length ? 'flex' : 'none';
 
     } catch (err) {
       setStatus(`Error: ${err.message}`);
@@ -280,20 +432,40 @@
     }
   }
 
-  // ── Render issue list ─────────────────────────────────────────────────────
-  function renderIssues(data) {
-    const list = document.getElementById('a11y-list');
+  function renderScore(score) {
+    const badge = document.getElementById('a11y-score-badge');
+    badge.textContent = `Score: ${score}`;
+    badge.style.display = 'inline-block';
+    badge.className = ''; // reset
+    if (score >= 90) badge.classList.add('a11y-score-badge', 'good');
+    else if (score >= 50) badge.classList.add('a11y-score-badge', 'fair');
+    else badge.classList.add('a11y-score-badge', 'poor');
+  }
 
-    if (!data.issues.length) {
-      list.innerHTML = '<div id="a11y-status" style="color:#27ae60">✓ No issues found!</div>';
+  // ── Render issue list ─────────────────────────────────────────────────────
+  function renderIssues() {
+    const list = document.getElementById('a11y-list');
+    if (!globalAuditData) return;
+
+    const filter = document.querySelector('.a11y-filter-chip.active').dataset.filter;
+    const filteredIssues = filter === 'all' 
+      ? globalAuditData.issues 
+      : globalAuditData.issues.filter(i => i.severity === filter);
+
+    if (!filteredIssues.length) {
+      list.innerHTML = `<div id="a11y-status" style="color:#27ae60">No ${filter === 'all' ? '' : filter} issues found!</div>`;
       return;
     }
 
-    list.innerHTML = data.issues.map(issue => `
+    list.innerHTML = filteredIssues.map(issue => `
       <div class="a11y-issue" data-id="${issue.id}">
         <span class="a11y-badge ${issue.severity}">${issue.severity}</span>
         <div class="a11y-issue-body">
-          <div class="a11y-issue-type">${issue.type.replace(/_/g, ' ')}</div>
+          <div class="a11y-issue-type">
+            ${issue.type.replace(/_/g, ' ')}
+            ${issue.wcag ? `<span class="a11y-wcag">${issue.wcag}</span>` : ''}
+            ${issue.impact ? `<span class="a11y-impact ${issue.impact}">${issue.impact}</span>` : ''}
+          </div>
           <div class="a11y-issue-desc">${escHtml(issue.description)}</div>
           <button class="a11y-fix-btn" data-id="${issue.id}">Apply fix</button>
         </div>
@@ -307,11 +479,36 @@
       });
     });
 
-    // Hover → highlight element
+    // Hover → highlight & peek fix
     list.querySelectorAll('.a11y-issue').forEach(row => {
-      row.addEventListener('mouseenter', () => highlightElement(row.dataset.id, true));
-      row.addEventListener('mouseleave', () => highlightElement(row.dataset.id, false));
+      row.addEventListener('mouseenter', () => {
+        highlightElement(row.dataset.id, true);
+        peekFix(row.dataset.id, true);
+      });
+      row.addEventListener('mouseleave', () => {
+        highlightElement(row.dataset.id, false);
+        peekFix(row.dataset.id, false);
+      });
     });
+  }
+
+  // Peek fix (temporary application on hover)
+  function peekFix(id, on) {
+    if (appliedFixes[id]) return; // already applied
+    const issue = issues.find(i => i.id === id);
+    if (!issue || !issue.fix.style) return; // only style fixes are safe to peek easily
+
+    const el = safeQuerySelector(issue.selector);
+    if (!el) return;
+
+    if (on) {
+      el.dataset.a11yPrePeek = el.style[issue.fix.style];
+      el.style[issue.fix.style] = issue.fix.value;
+      el.style.transition = 'all 0.3s ease';
+    } else {
+      el.style[issue.fix.style] = el.dataset.a11yPrePeek || '';
+      delete el.dataset.a11yPrePeek;
+    }
   }
 
   function setStatus(msg) {
@@ -396,6 +593,63 @@
     const el = safeQuerySelector(issue.selector);
     if (!el) return;
     el.classList.toggle('a11y-highlight', on);
+  }
+
+  // ── Enhancements Logic ───────────────────────────────────────────────────
+  const SETTINGS_KEY = 'a11y_settings';
+  let settings = {
+    grayscale: false,
+    invert: false,
+    'high-contrast': false,
+    'links-visible': false,
+    'focus-visible': false,
+    'missing-alt': false,
+    fontSize: 100,
+    lineSpacing: 1.0,
+  };
+
+  function toggleEnhancement(tool, btn) {
+    settings[tool] = !settings[tool];
+    document.documentElement.classList.toggle(`a11y-${tool}`, settings[tool]);
+    if (btn) btn.classList.toggle('active', settings[tool]);
+    saveSettings();
+  }
+
+  function adjustFont(delta) {
+    settings.fontSize = Math.min(200, Math.max(50, settings.fontSize + delta));
+    document.documentElement.style.fontSize = `${settings.fontSize}%`;
+    document.getElementById('a11y-font-val').textContent = `${settings.fontSize}%`;
+    saveSettings();
+  }
+
+  function adjustLine(delta) {
+    settings.lineSpacing = Math.min(3, Math.max(1, parseFloat((settings.lineSpacing + delta).toFixed(1))));
+    document.body.style.lineHeight = settings.lineSpacing;
+    document.getElementById('a11y-line-val').textContent = settings.lineSpacing.toFixed(1);
+    saveSettings();
+  }
+
+  function saveSettings() {
+    localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
+  }
+
+  function restoreSettings() {
+    const saved = localStorage.getItem(SETTINGS_KEY);
+    if (!saved) return;
+    try {
+      settings = JSON.parse(saved);
+      // Re-apply classes
+      ['grayscale', 'invert', 'high-contrast', 'links-visible', 'focus-visible', 'missing-alt'].forEach(tool => {
+        document.documentElement.classList.toggle(`a11y-${tool}`, !!settings[tool]);
+        const btn = document.querySelector(`.a11y-tool-btn[data-tool="${tool}"]`);
+        if (btn) btn.classList.toggle('active', !!settings[tool]);
+      });
+      // Re-apply styles
+      document.documentElement.style.fontSize = `${settings.fontSize}%`;
+      document.getElementById('a11y-font-val').textContent = `${settings.fontSize}%`;
+      document.body.style.lineHeight = settings.lineSpacing;
+      document.getElementById('a11y-line-val').textContent = settings.lineSpacing.toFixed(1);
+    } catch (e) { console.error('Failed to restore a11y settings', e); }
   }
 
   // ── Utilities ─────────────────────────────────────────────────────────────

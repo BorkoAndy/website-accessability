@@ -66,12 +66,14 @@ RULES:
 - Return ONLY a raw JSON object — no markdown fences, no prose, no extra keys.
 - Each issue must have exactly these fields:
     id          string   sequential "a11y-N"
-    selector    string   valid CSS selector targeting the element (be specific, use id/class/attribute)
+    selector    string   valid CSS selector targeting the element
     type        string   one of: missing_alt | low_contrast | missing_label | wrong_heading_order |
                          small_touch_target | missing_role | keyboard_trap | missing_lang |
                          empty_link | color_only_info | auto_play_media | missing_skip_link | other
     severity    string   "critical" | "warning" | "suggestion"
-    description string   one sentence explaining the problem, including current values where relevant
+    impact      string   "high" | "medium" | "low" (based on how many users it affects)
+    wcag        string   the specific WCAG 2.1 success criteria (e.g. "1.1.1" or "1.4.3")
+    description string   one sentence explaining the problem
     fix         object   exactly ONE of:
                            { "style": "<css-property>", "value": "<new-value>" }
                            { "attribute": "<attr-name>", "value": "<new-value>" }
@@ -80,16 +82,17 @@ RULES:
                            { "wrapWith": "<tag>", "attributes": {} }
                            { "textContent": "<new-text>" }
 
-- For low_contrast: calculate the WCAG contrast ratio yourself. Only report it if it actually fails.
-- For missing_alt: generate meaningful descriptive alt text from surrounding context.
-- For missing_label: suggest a concise, accurate label based on input name/placeholder/context.
+- For low_contrast: calculate the WCAG contrast ratio yourself. 
+- For missing_alt: generate meaningful descriptive alt text.
 - Do not report issues that don't exist. Quality over quantity.
-- Add a top-level "summary" string: "Found N issues: X critical, Y warnings, Z suggestions."
+- Add a top-level "summary" string.
+- Add a top-level "score" integer (0-100) where 100 is perfectly accessible and 0 is unusable.
 
 Output schema:
 {
   "issues": [ ...issue objects... ],
-  "summary": "Found N issues: ..."
+  "summary": "...",
+  "score": 85
 }"""
 
         user_prompt = f"""Audit this page for accessibility issues.
@@ -146,6 +149,7 @@ Page URL (reference only): {url or 'unknown'}
         self.wfile.write(json.dumps({
             'issues': parsed.get('issues', []),
             'summary': parsed.get('summary', ''),
+            'score': parsed.get('score', 100),
             'model': 'meta-llama/llama-4-scout-17b-16e-instruct',
             'ms': ms,
         }).encode())
