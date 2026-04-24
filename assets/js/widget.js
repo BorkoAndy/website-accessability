@@ -173,6 +173,13 @@
       saveSettings();
     });
 
+    // Emergency Reset: CTRL+F5 or CTRL+R clears everything
+    window.addEventListener('keydown', (e) => {
+      if (e.ctrlKey && (e.key === 'F5' || e.key === 'r' || e.key === 'R')) {
+        localStorage.removeItem(SETTINGS_KEY);
+      }
+    });
+
     // Preferences listeners
     container.querySelectorAll('.a11y-tool-btn[data-tool]').forEach(btn => {
       btn.addEventListener('click', () => {
