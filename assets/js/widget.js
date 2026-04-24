@@ -24,7 +24,7 @@
   };
 
   // ── Styles ────────────────────────────────────────────────────────────────
-  const CSS = `
+  const STYLES = `
     #a11y-fab {
       position: fixed; bottom: 24px; right: 24px; z-index: 2147483646;
       width: 50px; height: 50px; border-radius: 50%;
@@ -112,7 +112,7 @@
     if (document.getElementById('a11y-styles')) return;
     const style = document.createElement('style');
     style.id = 'a11y-styles';
-    style.textContent = CSS;
+    style.textContent = STYLES;
     document.head.appendChild(style);
   }
 
