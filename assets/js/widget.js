@@ -140,7 +140,7 @@
           </div>
         </div>
       </div>
-      <button id="a11y-fab" aria-label="Open Accessibility Menu" title="Accessibility Settings">♿</button>
+      <button id="a11y-fab" aria-label="Open Accessibility Menu" title="Accessibility Settings">&#9854;</button>
     `;
 
     document.body.appendChild(container);
