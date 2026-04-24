@@ -213,10 +213,28 @@
   function getSelector(el) {
     if (el.id) return '#' + CSS.escape(el.id);
     const tag = el.tagName.toLowerCase();
-    const cls = el.className && typeof el.className === 'string'
-      ? '.' + el.className.trim().split(/\s+/).slice(0, 2).join('.') : '';
+    // Filter out Tailwind JIT classes with brackets e.g. text-[10px] — invalid in querySelector
+    const safeClasses = el.className && typeof el.className === 'string'
+      ? el.className.trim().split(/\s+/).filter(c => !/[\[\]()#]/.test(c)).slice(0, 2)
+      : [];
+    const cls = safeClasses.length ? '.' + safeClasses.join('.') : '';
     const nth = Array.from(el.parentElement?.children ?? []).indexOf(el) + 1;
     return `${tag}${cls}:nth-child(${nth})`;
+  }
+
+  // Safe querySelector that won't throw on invalid selectors from the AI
+  function safeQuerySelector(selector) {
+    try {
+      return document.querySelector(selector);
+    } catch (e) {
+      // Fallback: try tag+nth-child only (strip classes)
+      try {
+        const tagNth = selector.replace(/\.[^\s:]+/g, '');
+        return document.querySelector(tagNth);
+      } catch (_) {
+        return null;
+      }
+    }
   }
 
   // ── API call ──────────────────────────────────────────────────────────────
@@ -304,7 +322,7 @@
   function applyFix(issue, btn) {
     if (appliedFixes[issue.id]) return;
 
-    const el = document.querySelector(issue.selector);
+    const el = safeQuerySelector(issue.selector);
     if (!el) {
       if (btn) { btn.textContent = 'Element not found'; btn.disabled = true; }
       return;
@@ -375,7 +393,7 @@
   function highlightElement(id, on) {
     const issue = issues.find(i => i.id === id);
     if (!issue) return;
-    const el = document.querySelector(issue.selector);
+    const el = safeQuerySelector(issue.selector);
     if (!el) return;
     el.classList.toggle('a11y-highlight', on);
   }
